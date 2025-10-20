@@ -1,23 +1,12 @@
 const router = require("express").Router();
 
-const getDone = () => {
-console.log('Router called');
-}
-router.get("/", getDone);
+const { getCurrentUser, deleteUser } = require("../controllers/users");
 
-router.get("/:id", () => {
-  console.log('Router id called');
-});
+const auth = require("../middlewares/auth");
 
-router.post("/", () => {
-  console.log('Router Posted');
-});
+router.use(auth);
+router.get("/me", getCurrentUser);
+router.delete("/:id", deleteUser);
 
-router.delete("/:id", () => {
-  console.log('Router deleted');
-});
 
-router.put("/:id", () => {
-  console.log('Router updated');
-});
 module.exports = router

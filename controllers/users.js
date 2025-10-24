@@ -31,7 +31,8 @@ const createUser = (req, res, next) => {
         username,
         email,
         password: hash,
-      }).then((user) => {
+      }))
+    .then((user) => {
         // Convert to plain object and delete password
         const userObject = user.toObject();
         delete userObject.password;
@@ -40,7 +41,6 @@ const createUser = (req, res, next) => {
           data: userObject,
         });
       })
-    )
     .catch((err) => {
       if (err.name === "ValidationError") {
         return next(

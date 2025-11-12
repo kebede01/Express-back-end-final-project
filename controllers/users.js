@@ -12,11 +12,12 @@ const NotFoundError = require("../errors/not-found-err");
 
 const BadRequestError = require("../errors/bad-request-err");
 // const UnauthorizedError = require("../errors/unauthorized-err");
-const ForbiddenError = require("../errors/forbidden-err");
+// const ForbiddenError = require("../errors/forbidden-err");
 
 const ConflictError = require("../errors/conflict-err");
 
 const errorUtils = require("../utils/errors");
+const UnauthorizedError = require("../errors/unauthorized-err");
 
 const createUser = (req, res, next) => {
   const { username, email, password } = req.body;
@@ -57,6 +58,8 @@ const createUser = (req, res, next) => {
     });
 };
 
+
+
 const getCurrentUser = (req, res, next) => {
   const userId = req.user._id; // Get user ID from auth middleware
   User.findById(userId)
@@ -94,7 +97,7 @@ const login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.message.includes("Incorrect email or password")) {
-        return next(new ForbiddenError("The user isn't authorized to login!"));
+        return next(new UnauthorizedError("The user isn't authorized to login!"));
       }
       if (err.name === " ValidationError") {
         return next(

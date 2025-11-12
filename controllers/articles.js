@@ -10,11 +10,11 @@ const NotFoundError = require("../errors/not-found-err");
 
 const getSavedArticles = (req, res, next) => {
   Article.find({})
-    .orFail()
+    // .orFail()
     .then((articles) => {
-      if (!articles) {
-        throw new NotFoundError("There are no clothing items!");
-      }
+      // if (!articles) {
+      //   throw new NotFoundError("There are no clothing items!");
+      // }
       res.status(success.Successful).send({ data: articles });
     })
     .catch((err) => {

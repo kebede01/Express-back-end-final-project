@@ -6,18 +6,27 @@ const { JWT_SECRET } = require("../utils/config");
 
 const User = require("../models/user");
 
-const success = require("../utils/errors");
-
-const NotFoundError = require("../errors/not-found-err");
+const success = require("../utils/success");
 
 const BadRequestError = require("../errors/bad-request-err");
-// const UnauthorizedError = require("../errors/unauthorized-err");
-// const ForbiddenError = require("../errors/forbidden-err");
+
+const UnauthorizedError = require("../errors/unauthorized-err");
 
 const ConflictError = require("../errors/conflict-err");
 
-const errorUtils = require("../utils/errors");
-const UnauthorizedError = require("../errors/unauthorized-err");
+const getCurrentUser = (req, res, next) => {
+  const userId = req.user._id;
+  User.findById(userId)
+    .orFail()
+    .then((user) => res.status(success.Successful).send({ data: user }))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError") {
+        return next(new BadRequestError("Invalid user id format"));
+      }
+      return next(err);
+    });
+};
 
 const createUser = (req, res, next) => {
   const { username, email, password } = req.body;
@@ -32,46 +41,26 @@ const createUser = (req, res, next) => {
         username,
         email,
         password: hash,
-      }))
-    .then((user) => {
-        // Convert to plain object and delete password
-        const userObject = user.toObject();
-        delete userObject.password;
-
-        res.status(errorUtils.SuccessfulOperation).send({
-          data: userObject,
-        });
       })
+    )
+    .then((user) => {
+      // Convert to plain object and delete password
+      const userObject = user.toObject();
+      delete userObject.password;
+
+      return res.status(success.SuccessfulOperation).send({
+        data: userObject,
+      });
+    })
     .catch((err) => {
+      console.error(err);
       if (err.name === "ValidationError") {
         return next(
           new BadRequestError("Check the values you provided for each field!")
         );
       }
       if (err.code === 11000) {
-        // Duplicate key error — typically for unique fields like email
         return next(new ConflictError("Email already exists."));
-      }
-      // Handle other errors
-
-      return next(err);
-    });
-};
-
-
-
-const getCurrentUser = (req, res, next) => {
-  const userId = req.user._id; // Get user ID from auth middleware
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError("User not found");
-      }
-      res.status(errorUtils.Successful).send({ data: user });
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return next(new BadRequestError("Invalid user id format"));
       }
       return next(err);
     });
@@ -86,36 +75,42 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError("User not found");
-      }
-      res.status(errorUtils.Successful).send({
+      const token = {
         token: jwt.sign({ _id: user._id }, JWT_SECRET, {
           expiresIn: "7d",
-        }),
-      });
+        })
+      }
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        samesite: "Strict", // or "Lax" depending on your frontend
+         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+}).status(success.Successful).send({ message: "Login successful" })
     })
     .catch((err) => {
+      console.error(err);
       if (err.message.includes("Incorrect email or password")) {
-        return next(new UnauthorizedError("The user isn't authorized to login!"));
+        return next(
+          new UnauthorizedError("The user used incorrect email or password!")
+        );
       }
-      if (err.name === " ValidationError") {
+      if (err.name === "ValidationError") {
         return next(
           new BadRequestError("Check the values you provided for each field!")
         );
       }
-      return next(err);
+ return next(err);
     });
 };
 
 const deleteUser = (req, res, next) => {
   const userId = req.user._id; // the currently logged in user's id
   User.findByIdAndDelete(userId)
-    .orFail()
-    .then(() => {
-      res
-        .status(success.Successful)
-        .send({ data: "Item deleted successfully" });
+   .then(() => res.status(success.Successful).send({ data: "Item deleted successfully" })
+    )
+    .catch((err) => {
+      console.error(err);
+      return next(err);
     });
 };
 module.exports = { createUser, getCurrentUser, login, deleteUser };

@@ -1,31 +1,31 @@
 const Article = require("../models/article");
 
-const success = require("../utils/errors");
-
+const success = require("../utils/success");
 
 const NotFoundError = require("../errors/not-found-err");
-// const BadRequestError = require("../errors/bad-request-err");
-// const UnauthorizedError = require("../errors/unauthorized-err");
-// const ForbiddenError = require("../errors/forbidden-err");
+const BadRequestError = require("../errors/bad-request-err");
+const UnauthorizedError = require("../errors/unauthorized-err");
 
 const getSavedArticles = (req, res, next) => {
-  Article.find({})
-    // .orFail()
+  if (!req.user) {
+    return next(new UnauthorizedError("Authentication required"));
+  }
+  Article.find({ owner: req.user._id })
+
     .then((articles) => {
-      // if (!articles) {
-      //   throw new NotFoundError("There are no clothing items!");
-      // }
+      if (articles.length === 0) {
+        throw new NotFoundError("There are no articles found!");
+      }
       res.status(success.Successful).send({ data: articles });
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        return next(new NotFoundError("The requested source was not found"));
-      }
+      console.log(err);
+
       return next(err);
     });
 };
 
-const saveArticle = async (req, res) => {
+const saveArticle = async (req, res, next) => {
   try {
     const {
       author,
@@ -36,7 +36,7 @@ const saveArticle = async (req, res) => {
       publishedAt,
       content,
       source,
-      keyWord
+      keyWord,
     } = req.body;
 
     const userId = req.user._id; // From your auth middleware
@@ -51,19 +51,56 @@ const saveArticle = async (req, res) => {
       content,
       source,
       keyWord,
-      owner: userId
+      owner: userId,
     });
 
     const savedArticle = await article.save();
-   return res.status(201).json(savedArticle);
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: error.message });
+    return res.status(success.SuccessfulOperation).json(savedArticle);
+  } catch (err) {
+    console.log(err);
+    if (err.name === "ValidationError") {
+      return next(new BadRequestError("Invalid request"));
     }
-   return res.status(500).json({ message: 'Server error' });
+    return next(err);
   }
 };
 
+const deleteSavedArticle = (req, res, next) => {
+  const userId = req.user._id;
+  const { itemId } = req.params;
+  Article.findById(itemId)
+    .orFail()
+    .then((article) => {
+      if (userId.toString() !== article.owner.toString()) {
+        return next(
+          new UnauthorizedError("You are not authorized to delete this item")
+        );
+      }
+      return Article.findByIdAndDelete(itemId);
 
+    })
+    .then(() => {
+      return res
+        .status(success.Successful)
+        .send({ data: "Item deleted successfully" });
+    })
+    .catch((err) => {
+      console.log(err);
 
-module.exports = { getSavedArticles , saveArticle};
+      if (err.name === "CastError") {
+        return next(new BadRequestError("Invalid id format entered"));
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return next(new NotFoundError("Article not found"));
+      }
+
+      return next(err);
+    });
+}
+
+module.exports = {
+    getSavedArticles,
+    saveArticle,
+    deleteSavedArticle,
+  };
+

@@ -59,19 +59,4 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`App is running on port ${PORT}`);
 });
-// Connected to mongoDB
-// NotFoundError: The requested source was not found
-//     at C:\Users\johnz\OneDrive\Desktop\Express-back-end-final-project\controllers\articles.js:22:21
-//     at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
-//   statusCode: 404
-// }
-// NotFoundError: The requested source was not found
-//     at C:\Users\johnz\OneDrive\Desktop\Express-back-end-final-project\controllers\articles.js:22:21
-//     at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
-//   statusCode: 404
-// }
-// NotFoundError: The requested source was not found
-//     at C:\Users\johnz\OneDrive\Desktop\Express-back-end-final-project\controllers\articles.js:22:21
-//     at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
-//   statusCode: 404
-// }
+

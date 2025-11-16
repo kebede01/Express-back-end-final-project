@@ -20,6 +20,7 @@ const errorHandler = require("./middlewares/error-handler");
 
 const { createUser, login } = require("./controllers/users");
 
+const { validateCreateUser, validateLogin } = require("./middlewares/validation");
 
 const app = express();
 app.use(helmet());
@@ -37,8 +38,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/explorer_db')
     console.error(err);
   })
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post("/signin",validateLogin ,login);
+app.post("/signup", validateCreateUser, createUser);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // in 15 minutes

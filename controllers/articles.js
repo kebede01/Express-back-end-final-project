@@ -10,13 +10,13 @@ const getSavedArticles = (req, res, next) => {
   if (!req.user) {
     return next(new UnauthorizedError("Authentication required"));
   }
-  Article.find({ owner: req.user._id })
+  return Article.find({ owner: req.user._id })
 
     .then((articles) => {
       if (articles.length === 0) {
         throw new NotFoundError("There are no articles found!");
       }
-      res.status(success.Successful).send({ data: articles });
+     return res.status(success.Successful).send({ data: articles });
     })
     .catch((err) => {
       console.log(err);
@@ -79,11 +79,10 @@ const deleteSavedArticle = (req, res, next) => {
       return Article.findByIdAndDelete(itemId);
 
     })
-    .then(() => {
-      return res
+    .then(() => res
         .status(success.Successful)
-        .send({ data: "Item deleted successfully" });
-    })
+        .send({ data: "Item deleted successfully" })
+    )
     .catch((err) => {
       console.log(err);
 

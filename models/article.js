@@ -8,7 +8,7 @@ const articleSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 2,
-
+    maxlength: 30,
   },
   description: {
     type: String,
@@ -34,6 +34,7 @@ const articleSchema = new mongoose.Schema({
     },
     publishedAt: {
       type: Date,
+      required: true,
     },
     content: {
       type: String,
@@ -44,14 +45,14 @@ const articleSchema = new mongoose.Schema({
       type: String,
       required: true,
       minlength: 2,
-
+      maxlength: 30,
     },
 
     keyWord: {
       type: String,
-      required: false,
+      required: true,
       minlength: 2,
-
+      maxlength: 30,
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,

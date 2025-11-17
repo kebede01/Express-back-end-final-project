@@ -15,6 +15,8 @@ const UnauthorizedError = require("../errors/unauthorized-err");
 const ConflictError = require("../errors/conflict-err");
 
 const getCurrentUser = (req, res, next) => {
+   console.log('req.user:', req.user);
+
   const userId = req.user._id;
   User.findById(userId)
     .orFail()
@@ -75,17 +77,21 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = {
-        token: jwt.sign({ _id: user._id }, JWT_SECRET, {
-          expiresIn: "7d",
-        })
-      }
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+
+      // const token = {
+      //   token: jwt.sign({ _id: user._id }, JWT_SECRET, {
+      //     expiresIn: "7d",
+      //   })
+      // }
       res.cookie("jwt", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        samesite: "Strict", // or "Lax" depending on your frontend
+        // secure: process.env.NODE_ENV === "production",
+         secure: false, // set to true only in production with HTTPS
+
+        sameSite: "None", // or "Lax" depending on your frontend
          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-}).status(success.Successful).send({ message: "Login successful" })
+}).status(success.Successful).send({token })
     })
     .catch((err) => {
       console.error(err);

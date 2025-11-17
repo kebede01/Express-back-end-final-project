@@ -33,19 +33,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors({
-  // origin: 'http://localhost:4000', // your frontend origin
-  // credentials: true,              // 👈 allow cookies to be sent
+  origin: 'http://localhost:4000', // your frontend origin
+  credentials: true,              // 👈 allow cookies to be sent
 }));
 
 
 // 👇 Add this right after CORS
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "http://localhost:4000");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-//   res.header("Access-Control-Allow-Credentials", "true");
-//   next();
-// });
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:4000");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 mongoose.connect('mongodb://127.0.0.1:27017/explorer_db')
   .then(() => {

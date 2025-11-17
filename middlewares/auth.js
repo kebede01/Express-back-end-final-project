@@ -13,7 +13,8 @@ const handleAuthError = (next) =>
 const objectIdSchema = Joi.string().hex().length(24).required();
 
 module.exports = (req, res, next) => {
-  const token = req.cookies.jwt;
+  // const token = req.cookies.jwt;
+   const token = req.headers.authorization;
   console.log("Raw cookie:", token);
 
   if (!token) {
@@ -22,7 +23,7 @@ module.exports = (req, res, next) => {
   }
 
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token.replace("Bearer ", ""), JWT_SECRET);
     console.log("Decoded payload:", payload);
 
     const { error } = objectIdSchema.validate(payload._id);

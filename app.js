@@ -14,6 +14,8 @@ const rateLimit = require("express-rate-limit");
 
 const helmet = require('helmet');
 
+require("dotenv").config();
+
 const mainRouter = require("./routes/index");
 
 const { PORT = 3002 } = process.env;

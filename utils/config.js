@@ -1,5 +1,4 @@
-const { JWT_SECRET = "super-secret-val" } = process.env;
+require('dotenv').config();
 
-module.exports = {
-  JWT_SECRET,
-}
+const { JWT_SECRET = "super-secret-val" } = process.env;
+module.exports = { JWT_SECRET };

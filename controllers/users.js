@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const { JWT_SECRET } = require("../utils/config");
 
+
 const User = require("../models/user");
 
 const success = require("../utils/success");
@@ -15,7 +16,7 @@ const UnauthorizedError = require("../errors/unauthorized-err");
 const ConflictError = require("../errors/conflict-err");
 
 const getCurrentUser = (req, res, next) => {
-   console.log('req.user:', req.user);
+
 
   const userId = req.user._id;
   User.findById(userId)
@@ -79,14 +80,10 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-      // const token = {
-      //   token: jwt.sign({ _id: user._id }, JWT_SECRET, {
-      //     expiresIn: "7d",
-      //   })
-      // }
+
       res.cookie("jwt", token, {
         httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
+        
          secure: false, // set to true only in production with HTTPS
 
         sameSite: "None", // or "Lax" depending on your frontend

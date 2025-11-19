@@ -16,13 +16,9 @@ const getSavedArticles = (req, res, next) => {
       if (articles.length === 0) {
         throw new NotFoundError("There are no articles found!");
       }
-     return res.status(success.Successful).send({ data: articles });
+      return res.status(success.Successful).send({ data: articles });
     })
-    .catch((err) => {
-      console.log(err);
-
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const saveArticle = async (req, res, next) => {
@@ -57,7 +53,7 @@ const saveArticle = async (req, res, next) => {
     const savedArticle = await article.save();
     return res.status(success.SuccessfulOperation).json(savedArticle);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     if (err.name === "ValidationError") {
       return next(new BadRequestError("Invalid request"));
     }
@@ -77,14 +73,12 @@ const deleteSavedArticle = (req, res, next) => {
         );
       }
       return Article.findByIdAndDelete(itemId);
-
     })
-    .then(() => res
-        .status(success.Successful)
-        .send({ data: "Item deleted successfully" })
+    .then(() =>
+      res.status(success.Successful).send({ data: "Item deleted successfully" })
     )
     .catch((err) => {
-      console.log(err);
+      // console.log(err);
 
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid id format entered"));
@@ -95,11 +89,10 @@ const deleteSavedArticle = (req, res, next) => {
 
       return next(err);
     });
-}
+};
 
 module.exports = {
-    getSavedArticles,
-    saveArticle,
-    deleteSavedArticle,
-  };
-
+  getSavedArticles,
+  saveArticle,
+  deleteSavedArticle,
+};

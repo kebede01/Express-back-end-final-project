@@ -50,9 +50,7 @@ app.use((req, res, next) => {
 });
 
 mongoose.connect('mongodb://127.0.0.1:27017/explorer_db')
-  .then(() => {
-    console.log(`Connected to mongoDB`);
-  })
+  .then(() => { })
   .catch((err) => {
     console.error(err);
   })
@@ -71,7 +69,5 @@ app.use(errorLogger);
 
 app.use(errors());
 app.use(errorHandler);
-app.listen(PORT, () => {
-  console.log(`App is running on port ${PORT}`);
-});
+app.listen(PORT);
 

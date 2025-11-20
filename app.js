@@ -24,9 +24,9 @@ const { PORT = 3002 } = process.env;
 
 const errorHandler = require("./middlewares/error-handler");
 
-const { createUser, login } = require("./controllers/users");
 
-const { validateCreateUser, validateLogin } = require("./middlewares/validation");
+
+
 
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
@@ -36,14 +36,10 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
-app.use(cors({
-  // origin: 'http://localhost:4000', // your frontend origin
-  // credentials: true,              // 👈 allow cookies to be sent
-}));
+app.use(cors());
 
 
-// Add this right after CORS
-// app.use(setCorsHeaders);
+
 
 mongoose.connect(MONGOIP)
   .then(() => { })
@@ -54,8 +50,7 @@ mongoose.connect(MONGOIP)
 
 app.use(limiter);
 app.use(requestLogger);
-app.post("/signin",validateLogin ,login);
-app.post("/signup", validateCreateUser, createUser);
+
 app.use("/", mainRouter);
 
 app.use(errorLogger);

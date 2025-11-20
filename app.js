@@ -18,7 +18,7 @@ require("dotenv").config();
 
 const mainRouter = require("./routes/index");
 
-const { mongoIP} = require("./utils/config")
+const { mongoIP, setCorsHeaders} = require("./utils/config")
 
 const { PORT = 3002 } = process.env;
 
@@ -35,15 +35,15 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
+
 app.use(cors({
-  // origin: 'http://localhost:4000', // your frontend origin
-  // credentials: true,              // 👈 allow cookies to be sent
+  origin: 'http://localhost:4000', // your frontend origin
+  credentials: true,              // 👈 allow cookies to be sent
 }));
 
 
 // Add this right after CORS
-// app.use(setCorsHeaders);
+app.use(setCorsHeaders);
 
 mongoose.connect(mongoIP)
   .then(() => { })
@@ -57,6 +57,8 @@ app.use(requestLogger);
 app.post("/signin",validateLogin ,login);
 app.post("/signup", validateCreateUser, createUser);
 app.use("/", mainRouter);
+
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(errorLogger);
 

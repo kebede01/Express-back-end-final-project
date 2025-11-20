@@ -83,7 +83,7 @@ const login = (req, res, next) => {
 
       res.cookie("jwt", token, {
         httpOnly: true,
-        
+
          secure: false, // set to true only in production with HTTPS
 
         sameSite: "None", // or "Lax" depending on your frontend
@@ -106,14 +106,14 @@ const login = (req, res, next) => {
     });
 };
 
-const deleteUser = (req, res, next) => {
-  const userId = req.user._id; // the currently logged in user's id
-  User.findByIdAndDelete(userId)
-   .then(() => res.status(success.Successful).send({ data: "Item deleted successfully" })
-    )
-    .catch((err) => {
-      console.error(err);
-      return next(err);
-    });
-};
-module.exports = { createUser, getCurrentUser, login, deleteUser };
+// const deleteUser = (req, res, next) => {
+//   const userId = req.user._id; // the currently logged in user's id
+//   User.findByIdAndDelete(userId)
+//    .then(() => res.status(success.Successful).send({ data: "Item deleted successfully" })
+//     )
+//     .catch((err) => {
+//       console.error(err);
+//       return next(err);
+//     });
+// };
+module.exports = { createUser, getCurrentUser, login};

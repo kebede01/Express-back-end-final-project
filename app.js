@@ -10,13 +10,15 @@ const cookieParser = require("cookie-parser");
 
 const { errors } = require("celebrate");
 
-const rateLimit = require("express-rate-limit");
-
 const helmet = require('helmet');
+
+const { limiter} = require("./utils/limiter");
 
 require("dotenv").config();
 
 const mainRouter = require("./routes/index");
+
+const {setCorsHeaders, mongoIP} = require("./utils/config")
 
 const { PORT = 3002 } = process.env;
 
@@ -40,25 +42,16 @@ app.use(cors({
 }));
 
 
-// 👇 Add this right after CORS
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:4000");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
+// Add this right after CORS
+app.use(setCorsHeaders);
 
-mongoose.connect('mongodb://127.0.0.1:27017/explorer_db')
+mongoose.connect(mongoIP)
   .then(() => { })
   .catch((err) => {
     console.error(err);
   })
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // in 15 minutes
-  max: 100 // you can make a maximum of 100 requests from one IP
-});
+
 app.use(limiter);
 app.use(requestLogger);
 app.post("/signin",validateLogin ,login);

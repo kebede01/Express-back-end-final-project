@@ -5,6 +5,7 @@ const success = require("../utils/success");
 const NotFoundError = require("../errors/not-found-err");
 const BadRequestError = require("../errors/bad-request-err");
 const UnauthorizedError = require("../errors/unauthorized-err");
+const ForbiddenError = require("../errors/forbidden-err")
 
 const getSavedArticles = (req, res, next) => {
   if (!req.user) {
@@ -69,14 +70,16 @@ const deleteSavedArticle = (req, res, next) => {
     .then((article) => {
       if (userId.toString() !== article.owner.toString()) {
         return next(
-          new UnauthorizedError("You are not authorized to delete this item")
+          new ForbiddenError("You are not authorized to delete this item")
         );
       }
-      return Article.findByIdAndDelete(itemId);
+      return Article.findByIdAndDelete(itemId).then(() =>
+        res
+          .status(success.Successful)
+          .send({ data: "Item deleted successfully" })
+      );
     })
-    .then(() =>
-      res.status(success.Successful).send({ data: "Item deleted successfully" })
-    )
+
     .catch((err) => {
       // console.log(err);
 

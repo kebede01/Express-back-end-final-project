@@ -32,7 +32,7 @@ This project focuses on creating a server for the newsexplorerfinal application.
 ### The project's domain names
 
 `newsexplorerfinal.jumpingcrab.com`
-`https://www.newsexplorerfinal.jumpingcrab.com/`
+`https://api.newsexplorerfinal.jumpingcrab.com/`
 `http://www.newsexplorerfinal.jumpingcrab.com/`
 
 ### A link to the frontend github repo

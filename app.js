@@ -10,23 +10,19 @@ const cookieParser = require("cookie-parser");
 
 const { errors } = require("celebrate");
 
-const helmet = require('helmet');
+const helmet = require("helmet");
 
-const { limiter} = require("./utils/limiter");
+const { limiter } = require("./utils/limiter");
 
-require("dotenv").config();
+// require("dotenv").config();
 
 const mainRouter = require("./routes/index");
 
-const { MONGOIP} = require("./utils/config")
+const { MONGOIP, PORT } = require("./utils/config");
 
-const { PORT = 3002 } = process.env;
+// const { PORT = 3002 } = process.env;
 
 const errorHandler = require("./middlewares/error-handler");
-
-
-
-
 
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
@@ -38,15 +34,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
-
-
-
-mongoose.connect(MONGOIP)
-  .then(() => { })
+mongoose
+  .connect(MONGOIP)
+  .then(() => {})
   .catch((err) => {
     console.error(err);
-  })
-
+  });
 
 app.use(limiter);
 app.use(requestLogger);
@@ -58,4 +51,3 @@ app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 app.listen(PORT);
-

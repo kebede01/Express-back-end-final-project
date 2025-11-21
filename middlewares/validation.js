@@ -54,7 +54,7 @@ module.exports.validateSaveArticle = celebrate({
 
     title: Joi.string().required().min(2).messages({
       "string.min": 'The minimum length of the "title" field is 2',
-    
+
       "string.empty": 'The "title" field must be filled in',
     }),
 
@@ -95,10 +95,4 @@ module.exports.validateSaveArticle = celebrate({
   }),
 });
 
-// module.exports.validateUserId = celebrate({
-//   headers: Joi.object({
-//     authorization: Joi.string()
-//       .pattern(/^Bearer\s[\w-]+\.[\w-]+\.[\w-]+$/)
-//       .required(),
-//   }).unknown(true),
-// });
+

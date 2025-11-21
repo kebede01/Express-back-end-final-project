@@ -90,9 +90,5 @@ module.exports.validateSaveArticle = celebrate({
       "string.max": 'The maximum length of the "keyWord" field is 30',
       "string.empty": 'The "keyWord" field must be filled in',
     }),
-
-    // owner: Joi.string().hex().length(24).required(),
   }),
 });
-
-

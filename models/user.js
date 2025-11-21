@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
 const userSchema = new mongoose.Schema({
- email: {
+  email: {
     type: String,
     required: true,
     unique: true,
@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false,
   },
-   username: {
+  username: {
     type: String,
     required: true,
     minlength: 2,
@@ -30,8 +30,7 @@ const userSchema = new mongoose.Schema({
 userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email,
   password
-)
-{
+) {
   return this.findOne({ email })
     .select("+password")
     .then((user) => {
@@ -48,8 +47,5 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
       });
     });
 };
-
-
-
 
 module.exports = mongoose.model("user", userSchema);

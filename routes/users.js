@@ -4,11 +4,7 @@ const { getCurrentUser } = require("../controllers/users");
 
 const auth = require("../middlewares/auth");
 
-
 router.use(auth);
 router.get("/me", getCurrentUser);
-// router.delete("/:id", deleteUser);
 
-
-
-module.exports = router
+module.exports = router;

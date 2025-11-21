@@ -14,13 +14,9 @@ const helmet = require("helmet");
 
 const { limiter } = require("./utils/limiter");
 
-// require("dotenv").config();
-
 const mainRouter = require("./routes/index");
 
 const { MONGOIP, PORT } = require("./utils/config");
-
-// const { PORT = 3002 } = process.env;
 
 const errorHandler = require("./middlewares/error-handler");
 
@@ -33,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
-app.options('*', cors());
+
 mongoose
   .connect(MONGOIP)
   .then(() => {})

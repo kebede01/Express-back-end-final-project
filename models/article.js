@@ -2,34 +2,33 @@ const mongoose = require("mongoose");
 
 const validator = require("validator");
 
-const articleSchema = new mongoose.Schema({
-  author: { type: String, required: true, minlength: 2, maxlength: 30, },
-  title: {
-    type: String,
-    required: true,
-    minlength: 2,
-    
-  },
-  description: {
-    type: String,
-    required: true,
-    minlength: 5,
-
-  },
-  url: {
-    type: String,
-    required: true,
-    validate: {
-      validator: (url) => validator.isURL(url),
-      message: 'invalid URL',
+const articleSchema = new mongoose.Schema(
+  {
+    author: { type: String, required: true, minlength: 2, maxlength: 30 },
+    title: {
+      type: String,
+      required: true,
+      minlength: 2,
     },
-  },
+    description: {
+      type: String,
+      required: true,
+      minlength: 5,
+    },
+    url: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (url) => validator.isURL(url),
+        message: "invalid URL",
+      },
+    },
     urlToImage: {
       type: String,
       required: true,
       validate: {
         validator: (urlToImage) => validator.isURL(urlToImage),
-        message: 'invalid URL',
+        message: "invalid URL",
       },
     },
     publishedAt: {
@@ -39,7 +38,6 @@ const articleSchema = new mongoose.Schema({
     content: {
       type: String,
       required: true,
-
     },
     source: {
       type: String,
@@ -60,8 +58,7 @@ const articleSchema = new mongoose.Schema({
       required: true,
     },
   },
- { timestamps: true });
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('article', articleSchema);
-
-
+module.exports = mongoose.model("article", articleSchema);

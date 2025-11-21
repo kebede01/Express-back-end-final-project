@@ -4,7 +4,7 @@ const { Joi } = require("celebrate");
 
 const { JWT_SECRET } = require("../utils/config");
 
-// const errorUtils = require("../utils/errors");
+
 const UnauthorizedError = require("../errors/unauthorized-err");
 
 const handleAuthError = (next) =>

@@ -13,12 +13,8 @@ const getSavedArticles = (req, res, next) => {
   }
   return Article.find({ owner: req.user._id })
 
-    .then((articles) => {
-      if (articles.length === 0) {
-        throw new NotFoundError("There are no articles found!");
-      }
-      return res.status(success.Successful).send({ data: articles });
-    })
+    .then((articles) => res.status(success.Successful).send({ data: articles })
+    )
     .catch((err) => next(err));
 };
 

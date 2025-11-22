@@ -15,8 +15,6 @@ const UnauthorizedError = require("../errors/unauthorized-err");
 const ConflictError = require("../errors/conflict-err");
 
 const getCurrentUser = (req, res, next) => {
-   console.log('req.user:', req.user);
-
   const userId = req.user._id;
   User.findById(userId)
     .orFail()
@@ -77,21 +75,21 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
 
-      // const token = {
-      //   token: jwt.sign({ _id: user._id }, JWT_SECRET, {
-      //     expiresIn: "7d",
-      //   })
-      // }
-      res.cookie("jwt", token, {
-        httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-         secure: false, // set to true only in production with HTTPS
+      res
+        .cookie("jwt", token, {
+          httpOnly: true,
 
-        sameSite: "None", // or "Lax" depending on your frontend
-         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-}).status(success.Successful).send({token })
+          secure: false, // set to true only in production with HTTPS
+
+          sameSite: "None", // or "Lax" depending on your frontend
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        })
+        .status(success.Successful)
+        .send({ token });
     })
     .catch((err) => {
       console.error(err);
@@ -105,18 +103,8 @@ const login = (req, res, next) => {
           new BadRequestError("Check the values you provided for each field!")
         );
       }
- return next(err);
-    });
-};
-
-const deleteUser = (req, res, next) => {
-  const userId = req.user._id; // the currently logged in user's id
-  User.findByIdAndDelete(userId)
-   .then(() => res.status(success.Successful).send({ data: "Item deleted successfully" })
-    )
-    .catch((err) => {
-      console.error(err);
       return next(err);
     });
 };
-module.exports = { createUser, getCurrentUser, login, deleteUser };
+
+module.exports = { createUser, getCurrentUser, login };

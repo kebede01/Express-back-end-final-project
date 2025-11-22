@@ -5,6 +5,7 @@ const success = require("../utils/success");
 const NotFoundError = require("../errors/not-found-err");
 const BadRequestError = require("../errors/bad-request-err");
 const UnauthorizedError = require("../errors/unauthorized-err");
+const ForbiddenError = require("../errors/forbidden-err");
 
 const getSavedArticles = (req, res, next) => {
   if (!req.user) {
@@ -12,17 +13,9 @@ const getSavedArticles = (req, res, next) => {
   }
   return Article.find({ owner: req.user._id })
 
-    .then((articles) => {
-      if (articles.length === 0) {
-        throw new NotFoundError("There are no articles found!");
-      }
-     return res.status(success.Successful).send({ data: articles });
-    })
-    .catch((err) => {
-      console.log(err);
-
-      return next(err);
-    });
+    .then((articles) => res.status(success.Successful).send({ data: articles })
+    )
+    .catch((err) => next(err));
 };
 
 const saveArticle = async (req, res, next) => {
@@ -57,7 +50,7 @@ const saveArticle = async (req, res, next) => {
     const savedArticle = await article.save();
     return res.status(success.SuccessfulOperation).json(savedArticle);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     if (err.name === "ValidationError") {
       return next(new BadRequestError("Invalid request"));
     }
@@ -73,18 +66,18 @@ const deleteSavedArticle = (req, res, next) => {
     .then((article) => {
       if (userId.toString() !== article.owner.toString()) {
         return next(
-          new UnauthorizedError("You are not authorized to delete this item")
+          new ForbiddenError("You are not authorized to delete this item")
         );
       }
-      return Article.findByIdAndDelete(itemId);
-
+      return Article.findByIdAndDelete(itemId).then(() =>
+        res
+          .status(success.Successful)
+          .send({ data: "Item deleted successfully" })
+      );
     })
-    .then(() => res
-        .status(success.Successful)
-        .send({ data: "Item deleted successfully" })
-    )
+
     .catch((err) => {
-      console.log(err);
+      // console.log(err);
 
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid id format entered"));
@@ -95,11 +88,10 @@ const deleteSavedArticle = (req, res, next) => {
 
       return next(err);
     });
-}
+};
 
 module.exports = {
-    getSavedArticles,
-    saveArticle,
-    deleteSavedArticle,
-  };
-
+  getSavedArticles,
+  saveArticle,
+  deleteSavedArticle,
+};

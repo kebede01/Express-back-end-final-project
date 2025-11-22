@@ -4,7 +4,7 @@ const { Joi } = require("celebrate");
 
 const { JWT_SECRET } = require("../utils/config");
 
-// const errorUtils = require("../utils/errors");
+
 const UnauthorizedError = require("../errors/unauthorized-err");
 
 const handleAuthError = (next) =>
@@ -13,22 +13,17 @@ const handleAuthError = (next) =>
 const objectIdSchema = Joi.string().hex().length(24).required();
 
 module.exports = (req, res, next) => {
-  // const token = req.cookies.jwt;
-   const token = req.headers.authorization;
-  console.log("Raw cookie:", token);
+  const token = req.headers.authorization;
 
   if (!token) {
-    console.log("No token found");
     return handleAuthError(next);
   }
 
   try {
     const payload = jwt.verify(token.replace("Bearer ", ""), JWT_SECRET);
-    console.log("Decoded payload:", payload);
 
     const { error } = objectIdSchema.validate(payload._id);
     if (error) {
-      console.log("Invalid _id:", payload._id);
       return next(new UnauthorizedError("Invalid user ID"));
     }
 
